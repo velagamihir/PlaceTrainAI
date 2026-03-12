@@ -3,25 +3,42 @@ import { Link, useNavigate } from "react-router";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import api from "../api";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 import { Brain, Upload } from "lucide-react";
 
 export function Register() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",
+    fullname: "",
     email: "",
     password: "",
     branch: "",
     year: "",
-    careerInterest: ""
+    career_interest: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock registration - redirect to dashboard
-    navigate("/dashboard");
+    const response = await api.post("/auth/register", formData);
+    if (response.status === 200) {
+      navigate("/dashboard");
+    } else {
+      navigate("/login");
+    }
   };
 
   return (
@@ -37,8 +54,10 @@ export function Register() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Student Registration</CardTitle>
-            <CardDescription>Fill in your details to create your personalized profile</CardDescription>
+            <CardTitle className="text-3xl">Student Registration</CardTitle>
+            <CardDescription>
+              Fill in your details to create your personalized profile
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -49,7 +68,9 @@ export function Register() {
                     id="name"
                     placeholder="John Doe"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     required
                   />
                 </div>
@@ -60,7 +81,9 @@ export function Register() {
                     type="email"
                     placeholder="john@university.edu"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                     required
                   />
                 </div>
@@ -73,7 +96,9 @@ export function Register() {
                   type="password"
                   placeholder="Create a strong password"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -81,14 +106,23 @@ export function Register() {
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="branch">Branch</Label>
-                  <Select value={formData.branch} onValueChange={(value) => setFormData({ ...formData, branch: value })}>
+                  <Select
+                    value={formData.branch}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, branch: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select branch" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="cse">Computer Science Engineering</SelectItem>
+                      <SelectItem value="cse">
+                        Computer Science Engineering
+                      </SelectItem>
                       <SelectItem value="it">Information Technology</SelectItem>
-                      <SelectItem value="ece">Electronics & Communication</SelectItem>
+                      <SelectItem value="ece">
+                        Electronics & Communication
+                      </SelectItem>
                       <SelectItem value="ee">Electrical Engineering</SelectItem>
                       <SelectItem value="me">Mechanical Engineering</SelectItem>
                     </SelectContent>
@@ -96,7 +130,12 @@ export function Register() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="year">Year</Label>
-                  <Select value={formData.year} onValueChange={(value) => setFormData({ ...formData, year: value })}>
+                  <Select
+                    value={formData.year}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, year: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select year" />
                     </SelectTrigger>
@@ -112,37 +151,30 @@ export function Register() {
 
               <div className="space-y-2">
                 <Label htmlFor="career">Career Interest</Label>
-                <Select value={formData.careerInterest} onValueChange={(value) => setFormData({ ...formData, careerInterest: value })}>
+                <Select
+                  value={formData.careerInterest}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, careerInterest: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select career path" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="sde">Software Development Engineer</SelectItem>
+                    <SelectItem value="sde">
+                      Software Development Engineer
+                    </SelectItem>
                     <SelectItem value="data-analyst">Data Analyst</SelectItem>
                     <SelectItem value="ml-engineer">ML Engineer</SelectItem>
                     <SelectItem value="frontend">Frontend Developer</SelectItem>
                     <SelectItem value="backend">Backend Developer</SelectItem>
-                    <SelectItem value="fullstack">Full Stack Developer</SelectItem>
+                    <SelectItem value="fullstack">
+                      Full Stack Developer
+                    </SelectItem>
                     <SelectItem value="devops">DevOps Engineer</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="resume">Resume Upload (Optional)</Label>
-                <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-blue-500 transition-colors cursor-pointer">
-                  <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                  <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
-                  <p className="text-xs text-gray-500 mt-1">PDF or DOC (MAX. 5MB)</p>
-                  <input
-                    id="resume"
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    className="hidden"
-                  />
-                </div>
-              </div>
-
               <div className="flex items-start gap-2">
                 <input type="checkbox" id="terms" className="mt-1" required />
                 <label htmlFor="terms" className="text-sm text-gray-600">
