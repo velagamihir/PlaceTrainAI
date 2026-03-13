@@ -67,9 +67,9 @@ export function Register() {
                   <Input
                     id="name"
                     placeholder="John Doe"
-                    value={formData.name}
+                    value={formData.fullname}
                     onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
+                      setFormData({ ...formData, fullname: e.target.value })
                     }
                     required
                   />
@@ -152,9 +152,9 @@ export function Register() {
               <div className="space-y-2">
                 <Label htmlFor="career">Career Interest</Label>
                 <Select
-                  value={formData.careerInterest}
+                  value={formData.career_interest}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, careerInterest: value })
+                    setFormData({ ...formData, career_interest: value })
                   }
                 >
                   <SelectTrigger>

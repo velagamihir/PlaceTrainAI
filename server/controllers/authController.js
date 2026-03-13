@@ -2,13 +2,14 @@
 const bcrypt = require("bcrypt");
 const userModel = require("../models/userModel");
 const { generateToken } = require("../config/jwt");
-const { registerService } = require("../services/authServices");
+const { registerService, loginService } = require("../services/authServices");
 
 exports.register = async (req, res, next) => {
   try {
-    const { name, email, password, branch, year, career_interest } = req.body;
+    const { fullname, email, password, branch, year, career_interest } =
+      req.body;
     const user = await registerService(
-      name,
+      fullname,
       email,
       password,
       branch,
@@ -37,26 +38,20 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-
-    const user = await userModel.findUserByEmail(email);
-
-    if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    const valid = await bcrypt.compare(password, user.password);
-
-    if (!valid) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
+    const user = await loginService(email, password);
     const token = generateToken(user);
-
-    res.json({
-      message: "Login successful",
-      token,
+    res.status(200).send({
+      status: "ok",
+      message: "login successful",
+      token: token,
+      role: user.role,
     });
   } catch (error) {
+    console.log(error);
+    res.status(error.statusCode || 500).send({
+      status: "error",
+      message: error.message || "Internal Sever Error",
+    });
     next(error);
   }
 };
