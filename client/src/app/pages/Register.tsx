@@ -30,14 +30,19 @@ export function Register() {
     year: "",
     career_interest: "",
   });
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const response = await api.post("/auth/register", formData);
-    if (response.status === 200) {
-      navigate("/dashboard");
-    } else {
-      navigate("/login");
+    setError("");
+    try {
+      const response = await api.post("/auth/register", formData);
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        navigate("/dashboard");
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Registration failed");
     }
   };
 
@@ -60,6 +65,7 @@ export function Register() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {error && <div className="p-3 mb-4 text-sm text-red-500 bg-red-100 rounded-md">{error}</div>}
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">

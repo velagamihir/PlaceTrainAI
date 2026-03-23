@@ -6,18 +6,29 @@ import { Label } from "../components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Brain } from "lucide-react";
+import api from "../api";
 
 export function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleLogin = (role: "student" | "admin") => {
-    // Mock login - in real app would validate credentials
-    if (role === "admin") {
-      navigate("/admin");
-    } else {
-      navigate("/dashboard");
+  const handleLogin = async (e: React.FormEvent, role: "student" | "admin") => {
+    e.preventDefault();
+    setError("");
+    try {
+      const response = await api.post("/auth/login", { email, password });
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        if (response.data.role === "admin" || role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Login failed. Please check your credentials.");
     }
   };
 
@@ -45,7 +56,8 @@ export function Login() {
                 <CardDescription>Access your personalized dashboard</CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={(e) => { e.preventDefault(); handleLogin("student"); }} className="space-y-4">
+                {error && <div className="p-3 mb-4 text-sm text-red-500 bg-red-100 rounded-md">{error}</div>}
+                <form onSubmit={(e) => handleLogin(e, "student")} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="student-email">Email</Label>
                     <Input
@@ -93,7 +105,8 @@ export function Login() {
                 <CardDescription>Access admin dashboard and analytics</CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={(e) => { e.preventDefault(); handleLogin("admin"); }} className="space-y-4">
+                {error && <div className="p-3 mb-4 text-sm text-red-500 bg-red-100 rounded-md">{error}</div>}
+                <form onSubmit={(e) => handleLogin(e, "admin")} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="admin-email">Admin Email</Label>
                     <Input

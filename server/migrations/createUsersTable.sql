@@ -1,9 +1,10 @@
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    name TEXT,
-    email TEXT UNIQUE,
+    id UUID PRIMARY KEY,
+    fullname TEXT,
+    email VARCHAR(255) UNIQUE,
     password TEXT,
-    branch text,
-    year text,
-    career_interest text,
+    branch TEXT,
+    year TEXT,
+    career_interest TEXT
+    
 );
